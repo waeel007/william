@@ -1,0 +1,36 @@
+"use strict";
+
+var handler = function handler(event) {
+  console.log("Nets eID Broker: Received event: " + event.data.command + ", from origin: " + event.origin);
+  if (event.data.command === 'auth_token') {
+    showMitId(event.data.message);
+    return;
+  }
+  ;
+  if (event.origin === window.location.origin) {
+    var errorEvent = [];
+    errorEvent["command"] = event.data.command;
+    errorEvent["message"] = event.data.message;
+    window.parent.postMessage(errorEvent, "*");
+    return;
+  }
+};
+window.addEventListener('message', handler);
+window.addEventListener("load", function () {
+  var event = [];
+  event["command"] = "ready";
+  event["message"] = "supported_commands: [auth_token]";
+  window.parent.postMessage(event, "*");
+});
+function submitAuthCode(authToken) {
+  var ifrm = document.createElement('iframe');
+  ifrm.setAttribute('id', 'ifrm');
+  document.body.appendChild(ifrm);
+  ifrm.setAttribute('scrolling', "no");
+  ifrm.setAttribute('src', '/iframe/login?authToken=' + authToken);
+  ifrm.setAttribute('style', "height: 100%; width: 100%; border: none");
+}
+function showMitId(authToken) {
+  submitAuthCode(authToken);
+}
+//# sourceMappingURL=iframe-mitid.js.map

@@ -1,0 +1,4 @@
+"use strict";
+
+parent.document.body.style = "width: 400px; height: 588px; margin:0; padding: 0; background-color: white;";
+//# sourceMappingURL=iframe-minimizedmode.js.map

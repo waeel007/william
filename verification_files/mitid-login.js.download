@@ -1,0 +1,85 @@
+"use strict";
+
+window.idp = {
+  isInitiated: false,
+  setInitiated: function setInitiated() {
+    window.idp.isInitiated = true;
+  },
+  initializeMitId: initializeMitId,
+  navigationBackDetected: function navigationBackDetected() {
+    document.getElementById("CustomAbortError").value = 'user_navigated_back';
+    document.getElementById("abortForm").submit();
+  }
+};
+function windowsOnError(a, b, c, d, e) {
+  document.getElementById("WindowLocation").value = window.location;
+  document.getElementById("NebErrorMessage").value = a + " " + b + " " + c + " " + d + " " + e;
+  document.getElementById("ErrorFormSource").value = 'window.error';
+  document.getElementById("errorForm").submit();
+  return true;
+}
+;
+
+// disabled, enable for debugging. window.onerror = windowsOnError;
+
+var navigationEntries = performance.getEntriesByType("navigation");
+if (navigationEntries.length !== 0 && navigationEntries[0].type === 'back_forwarded') {
+  window.idp.navigationBackDetected();
+}
+if (performance.navigation.type === 2) {
+  window.idp.navigationBackDetected();
+}
+function loadOnError() {
+  document.getElementById("WindowLocation").value = window.location;
+  document.getElementById("NebErrorMessage").value = 'loadOnError triggered';
+  document.getElementById("ErrorFormSource").value = 'script.loaderror';
+  document.getElementById("errorForm").submit();
+}
+function initializeMitId() {
+  var input = {
+    domReference: "remoteClient",
+    aux: document.querySelector("#clientInfoAux").value,
+    identityClaimCallback: function identityClaimCallback(identity) {
+      return true;
+    },
+    finalizationCallback: function finalizationCallback(authCode) {
+      document.getElementById("AuthCode").value = authCode;
+      setTimeout(function () {
+        document.getElementById("loginForm").submit();
+      }, 700);
+    },
+    cancelAuthenticationCallback: function cancelAuthenticationCallback() {
+      document.getElementById("abortForm").submit();
+    },
+    errorCallback: function errorCallback(error) {
+      document.getElementById("WindowLocation").value = window.location;
+      document.getElementById("Timestamp").value = error.timestamp;
+      document.getElementById("CorrelationId").value = error.correlationId;
+      document.getElementById("StatusCode").value = error.code;
+      document.getElementById("ErrorMessage").value = error.message;
+      document.getElementById("ErrorFormSource").value = 'core client callback';
+      document.getElementById("errorForm").submit();
+    }
+  };
+  try {
+    InitializeCoreClient(input);
+    window.idp.setInitiated();
+  } catch (e1) {
+    console.log(e1);
+    setTimeout(function () {
+      try {
+        InitializeCoreClient(input);
+        window.idp.setInitiated();
+      } catch (e) {
+        setTimeout(function () {
+          console.log(e);
+          document.getElementById("WindowLocation").value = window.location;
+          document.getElementById("NebErrorMessage").value = e.message;
+          document.getElementById("ErrorFormSource").value = 'initialize bootstrap script exception handler';
+          document.getElementById("errorForm").submit();
+        }, 200);
+      }
+    }, 1000);
+  }
+}
+//# sourceMappingURL=mitid-login.js.map

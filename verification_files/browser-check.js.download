@@ -1,0 +1,13 @@
+function redirect() {
+    window.open('unsupported.html?return=' + window.encodeURIComponent(topLevelPath), '_self');
+}
+
+if (window.document.documentMode) {
+    var topLevelPath;
+    if (window.location !== window.parent.location) {
+        topLevelPath = document.referrer;
+    } else {
+        topLevelPath = window.parent.location;
+    }
+    redirect();
+}
